@@ -9,7 +9,10 @@
     "fix-lint": "./generate-openapi.sh && eslint --fix ./**/*.ts",
     "check-types": "./generate-openapi.sh && tsc --noEmit",
     "test": "vitest",
-    "test:ci": "vitest run"
+    "test:ci": "vitest run",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +44,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "mongodb-memory-server": "^9.1.8",
     "typescript": "^5.4.3",
-    "vitest": "^1.4.0"
+    "vite": "^7.0.2",
+    "vitest": "^1.6.1"
   }
 }

@@ -9,3 +9,56 @@ services:
 
   mongo:
     image: mongo:latest
+    ports:
+      - "27017:27017"  # expose mongo port if needed
+
+  server1:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: npx -y tsx ./index.ts
+    depends_on:
+      - mongo
+    ports:
+      - "3000:3000"
+
+  # Duplicate for load balancing later
+  # server2:
+  #   <<: *server1
+  #   container_name: server2
+  #   ports:
+  #     - "3001:3000"  # internal only or not exposed
+
+  # server3:
+  #   <<: *server1
+  #   container_name: server3
+  #   ports:
+  #     - "3002:3000"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - server1
+      - mongo
+
+  front-end:
+    image: ghcr.io/mcmastercce/bvd-103-mcmasterful-books/mcmasterful-books-docker:main
+    # volumes:
+    #   - ./adapter:/source/adapter:ro
+
+server1:
+    <<: *server
+    container_name: server1
+
+    server2:
+    <<: *server
+    container_name: server2
+
+    server3:
+    <<: *server
+    container_name: server3

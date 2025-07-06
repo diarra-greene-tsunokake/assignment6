@@ -1,0 +1,438 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"HelloMessage": {
+				"type": "string"
+			},
+			"Record_string.number_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "number",
+					"format": "double"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"BookID": {
+				"type": "string",
+				"description": "A unique identifier for a particular book"
+			},
+			"ShelfId": {
+				"type": "string",
+				"description": "The name of a shelf"
+			},
+			"OrderId": {
+				"type": "string",
+				"description": "A unique identifier for a particular order"
+			},
+			"FulfilledBooks": {
+				"items": {
+					"properties": {
+						"numberOfBooks": {
+							"type": "number",
+							"format": "double"
+						},
+						"shelf": {
+							"$ref": "#/components/schemas/ShelfId"
+						},
+						"book": {
+							"$ref": "#/components/schemas/BookID"
+						}
+					},
+					"required": [
+						"numberOfBooks",
+						"shelf",
+						"book"
+					],
+					"type": "object"
+				},
+				"type": "array",
+				"description": "An array listing how many copies of each book are taken from a given shelf while fulfilling an order"
+			},
+			"OrderPlacement": {
+				"items": {
+					"$ref": "#/components/schemas/BookID"
+				},
+				"type": "array",
+				"description": "An array listing all the books ordered by Id. Multiple copies of a book are listed as duplicate IDs"
+			},
+			"Record_BookID.number_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "number",
+					"format": "double"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"Order": {
+				"description": "An order's details",
+				"properties": {
+					"orderId": {
+						"$ref": "#/components/schemas/OrderId",
+						"description": "The order's unique id"
+					},
+					"books": {
+						"$ref": "#/components/schemas/Record_BookID.number_",
+						"description": "A dictionary of book id's matching the number of copies of each book requested for the order"
+					}
+				},
+				"required": [
+					"orderId",
+					"books"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Book": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/BookID"
+					},
+					"name": {
+						"type": "string"
+					},
+					"author": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"image": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"author",
+					"description",
+					"price",
+					"image"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Filter": {
+				"properties": {
+					"from": {
+						"type": "number",
+						"format": "double"
+					},
+					"to": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"author": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "assignment-template",
+		"version": "1.0.0",
+		"description": "This is a template repository for the first assignment in BVD 103 at McMaster Continuing Education.",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"paths": {
+		"/hello/{name}": {
+			"get": {
+				"operationId": "SayHello",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HelloMessage"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "name",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/warehouse/{book}": {
+			"get": {
+				"operationId": "GetBookInfo",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Record_string.number_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Find the shelves that have copies of the book, and how\nmany copies each shelf has",
+				"security": [],
+				"parameters": [
+					{
+						"description": "The book's unique identifier!",
+						"in": "path",
+						"name": "book",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/BookID"
+						}
+					}
+				]
+			}
+		},
+		"/warehouse/{book}/{shelf}/{number}": {
+			"put": {
+				"operationId": "PlaceBooksOnShelf",
+				"responses": {
+					"201": {
+						"description": "Added"
+					}
+				},
+				"description": "Add copies of a book to a provided shelf",
+				"security": [],
+				"parameters": [
+					{
+						"description": "The book's unique identifier",
+						"in": "path",
+						"name": "book",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/BookID"
+						}
+					},
+					{
+						"description": "The shelf's name",
+						"in": "path",
+						"name": "shelf",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/ShelfId"
+						}
+					},
+					{
+						"description": "The number of copies to place on the shelf",
+						"in": "path",
+						"name": "number",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/fulfil/{order}": {
+			"put": {
+				"operationId": "FulfilOrder",
+				"responses": {
+					"201": {
+						"description": "Fulfilled"
+					}
+				},
+				"description": "Fulfil an order by taking all the relevant book copies for the order off the shelves",
+				"security": [],
+				"parameters": [
+					{
+						"description": "The Order ID",
+						"in": "path",
+						"name": "order",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/OrderId"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"booksFulfilled": {
+										"$ref": "#/components/schemas/FulfilledBooks",
+										"description": "An array lsting how many copies of each book were taken from each shelf"
+									}
+								},
+								"required": [
+									"booksFulfilled"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/order": {
+			"post": {
+				"operationId": "PlaceOrder",
+				"responses": {
+					"201": {
+						"description": "created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OrderId"
+								}
+							}
+						}
+					}
+				},
+				"description": "Place an order",
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"order": {
+										"$ref": "#/components/schemas/OrderPlacement",
+										"description": "An array of the ordered book id's"
+									}
+								},
+								"required": [
+									"order"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "ListOrders",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Order"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all the pending orders",
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/books/list": {
+			"post": {
+				"operationId": "ListBooks",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Book"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/Filter"
+								},
+								"type": "array"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/books": {
+			"post": {
+				"operationId": "CreateOrUpdateBook",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"id": {
+											"$ref": "#/components/schemas/BookID"
+										}
+									},
+									"required": [
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Book"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/api"
+		}
+	]
+}
